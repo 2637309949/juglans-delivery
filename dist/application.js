@@ -35,7 +35,7 @@ module.exports = function () {
         if (opts.index !== false) opts.index = opts.index || 'index.html';
 
         if (!opts.defer) {
-          httpProxy.use(
+          httpProxy.use(`${opts.urlPrefix}*`,
           /*#__PURE__*/
           function () {
             var _ref3 = _asyncToGenerator(function* (ctx, next) {
@@ -61,7 +61,7 @@ module.exports = function () {
             };
           }());
         } else {
-          httpProxy.use(
+          httpProxy.use(`${opts.urlPrefix}*`,
           /*#__PURE__*/
           function () {
             var _ref4 = _asyncToGenerator(function* (ctx, next) {
