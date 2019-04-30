@@ -30,28 +30,35 @@ module.exports = function () {
           }
         } = _ref;
         opts.root = opts.root || assetsDir;
+        assert(opts.urlPrefix, 'urlPrefix is required to serve files');
         assert(opts.root, 'root directory is required to serve files');
         opts.root = resolve(opts.root);
         if (opts.index !== false) opts.index = opts.index || 'index.html';
 
         if (!opts.defer) {
-          httpProxy.use(`${opts.urlPrefix}*`,
+          httpProxy.use(
           /*#__PURE__*/
           function () {
             var _ref3 = _asyncToGenerator(function* (ctx, next) {
-              let done = false;
+              const urlPath = ctx.path;
 
-              if (ctx.method === 'HEAD' || ctx.method === 'GET') {
-                try {
-                  done = yield send(ctx, ctx.path, opts);
-                } catch (err) {
-                  if (err.status !== 404) {
-                    throw err;
+              if (urlPath.startsWith(opts.urlPrefix)) {
+                let done = false;
+
+                if (ctx.method === 'HEAD' || ctx.method === 'GET') {
+                  try {
+                    done = yield send(ctx, urlPath.replace(opts.urlPrefix, ''), opts);
+                  } catch (err) {
+                    if (err.status !== 404) {
+                      throw err;
+                    }
                   }
                 }
-              }
 
-              if (!done) {
+                if (!done) {
+                  yield next();
+                }
+              } else {
                 yield next();
               }
             });
@@ -61,19 +68,23 @@ module.exports = function () {
             };
           }());
         } else {
-          httpProxy.use(`${opts.urlPrefix}*`,
+          httpProxy.use(
           /*#__PURE__*/
           function () {
             var _ref4 = _asyncToGenerator(function* (ctx, next) {
               yield next();
-              if (ctx.method !== 'HEAD' && ctx.method !== 'GET') return;
-              if (ctx.body != null || ctx.status !== 404) return;
+              const urlPath = ctx.path;
 
-              try {
-                yield send(ctx, ctx.path, opts);
-              } catch (err) {
-                if (err.status !== 404) {
-                  throw err;
+              if (urlPath.startsWith(opts.urlPrefix)) {
+                if (ctx.method !== 'HEAD' && ctx.method !== 'GET') return;
+                if (ctx.body != null || ctx.status !== 404) return;
+
+                try {
+                  yield send(ctx, urlPath.replace(opts.urlPrefix, ''), opts);
+                } catch (err) {
+                  if (err.status !== 404) {
+                    throw err;
+                  }
                 }
               }
             });
