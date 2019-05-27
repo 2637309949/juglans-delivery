@@ -3,8 +3,10 @@
 Provides static file services.  For example, static web pages, docs.
 - Example  
 ```javascript
+// Delivery Plugin
 app.Use(Delivery({
-  root: path.join(__dirname, '../../public'),
+  urlPrefix: '/public',
+  root: path.join(__dirname, '../assets/public')
 }))
 ```
 ## MIT License
