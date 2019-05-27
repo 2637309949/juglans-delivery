@@ -24,12 +24,8 @@ module.exports = function () {
     function () {
       var _ref2 = _asyncToGenerator(function* (_ref) {
         let {
-          httpProxy,
-          config: {
-            assetsDir
-          }
+          httpProxy
         } = _ref;
-        opts.root = opts.root || assetsDir;
         assert(opts.urlPrefix, 'urlPrefix is required to serve files');
         assert(opts.root, 'root directory is required to serve files');
         opts.root = resolve(opts.root);
